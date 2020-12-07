@@ -2,6 +2,8 @@ package aoc2020.adv06
 
 import com.sun.javaws.exceptions.InvalidArgumentException
 
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 import scala.util.matching.Regex
 
@@ -9,26 +11,44 @@ object Part2 {
 
   def solve(input: Array[String]) = {
 
-    val x = Integer.parseInt("100",2)
-    println(x)
 
-    val all = input.map(line => {
-      val row = line.substring(0, 7).replaceAll("F", "0").replaceAll("B", "1")
-      val col = line.substring(7).replaceAll("L", "0").replaceAll("R", "1")
+    val allGroups = ArrayBuffer.empty[Group]
 
-      val rowInt = Integer.parseInt(row, 2)
-      val colInt = Integer.parseInt(col, 2)
+    var tmpGroupMap = mutable.HashMap.empty[Char, Int]
+    var tmpGroupSize =  0
 
+    for (line <- input) {
 
-      val r = rowInt * 8 + colInt
+      if (line.nonEmpty) {
+        tmpGroupSize = tmpGroupSize + 1
+        val answersOfSinglePerson = line.toCharArray.toSet
+        answersOfSinglePerson.foreach(answer => {
+          val currentCount = tmpGroupMap.getOrElse(answer, 0)
+          tmpGroupMap.update(answer, currentCount + 1)
+        })
+      } else {
+        allGroups.append( Group(tmpGroupSize, tmpGroupMap) )
+        tmpGroupMap = mutable.HashMap.empty[Char, Int]
+        tmpGroupSize = 0
+      }
 
-      r
-    }).sorted
+    }
 
-    println(all.mkString("\n"))
+    if (tmpGroupMap.nonEmpty) {
+      allGroups.append(Group(tmpGroupSize, tmpGroupMap))
+    }
 
+    allGroups.foreach(g => println(s"Group size ${g.size}  ${g.answers.mkString(",")} \n"))
+
+    val res = allGroups.map(gr => {
+      gr.answers.count((entry) => entry._2 == gr.size)
+    }).sum
+
+    println(res)
 
   }
+
+  case class Group(size: Int, answers: mutable.HashMap[Char, Int])
 
 }
 
