@@ -1,81 +1,49 @@
-package aoc2020.adv07
+package aoc2020.adv08
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 object Part1 {
 
-  case class BagParentFits(fits: Int, parent: String)
-
-  val pattern = """^(\d+)(.*)""".r
-  val dependencies = mutable.HashMap.empty[String, List[BagParentFits]]
-
-    def solve(input: Array[String]) = {
+  val execCounter = mutable.Map.empty[Int, Int]
 
 
-    input.foreach(line => {
+  var pointer = 0
+  var maxExecCounter = 0
+  var acc = 0
 
-      if (line.nonEmpty){
-      val x1 = line.replace("bags", "").replace("bag", "").replace(".", "").split("contain")
-      val parent = x1(0).trim
-      val children = x1(1).split(",")
+  def solve(input: Array[String]) = {
 
-      children.foreach(chUntrimmed => {
-        val ch = chUntrimmed.trim
+    while (maxExecCounter < 2) {
+      val op = input(pointer)
 
+      val opLine = op.split(' ')
+      val command = opLine(0)
+      val value = opLine(1).replace("+", "").toInt
 
-        if (!ch.contains("no other")) {
-
-          val (fits, child) = pattern.findFirstMatchIn(ch) match {
-            case Some(i) => (i.group(1).toInt, i.group(2).trim)
-            case _ => throw new IllegalArgumentException("regex not found")
-          }
-
-          val parents: List[BagParentFits] = dependencies.getOrElse(child, List.empty)
-          dependencies(child) = parents :+ BagParentFits(fits, parent)
-        }
-
-      })
-    }
-
-    })
-
-
-    println(dependencies.mkString("\n"))
-
-    // let's traverse the tree
-
-    var foundParents = Set.empty[String]
-    var  safetyCount = 0
-    var tmpParents = findParentsFor("shiny gold")
-
-      while (tmpParents.nonEmpty && safetyCount < 1000) {
-        foundParents = foundParents ++ tmpParents
-        tmpParents = findParentsWithCheck(tmpParents)
-        safetyCount = safetyCount + 1
-        if (safetyCount > 900) {
-          println("\n\n\n\n\n\n\n\n safety count reached \n\n\n\n\n\n")
-        }
+      command match {
+        case "nop" => pointer = pointer + 1
+        case "jmp" => pointer = pointer + value
+        case "acc" =>
+          acc = acc + value
+          pointer = pointer + 1
+        case x     => throw new IllegalArgumentException(s"Unknown operator $x")
       }
 
-      println(foundParents)
-      println(foundParents.size)
+
+      val tmpCounter = execCounter.getOrElse(pointer, 0)
+      val newTmpCounter = tmpCounter + 1
+      execCounter.update(pointer, newTmpCounter)
+      maxExecCounter = Math.max(maxExecCounter, newTmpCounter)
+
+    }
+
+    println(s"execution finished at line $pointer with accumulator value $acc")
 
   }
-  private def findParentsWithCheck(nodes: Set[String]) = {
-    var res = Set.empty[String]
-    nodes.foreach(p => {
-        res = res ++ findParentsFor(p)
-    })
-    res
-  }
 
 
-  private def findParentsFor(node: String) = {
-    val value: Seq[BagParentFits] = dependencies.getOrElse(node, List.empty)
-    val set: Set[BagParentFits] = value.toSet
-    set.map(_.parent)
-  }
+
 
 
 }

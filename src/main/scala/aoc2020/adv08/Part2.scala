@@ -1,90 +1,78 @@
-package aoc2020.adv07
-
-import com.sun.javaws.exceptions.InvalidArgumentException
+package aoc2020.adv08
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-import scala.util.Try
-import scala.util.matching.Regex
 
 object Part2 {
 
-  case class BagEntry(count: Int, name: String)
 
-  val pattern = """^(\d+)(.*)""".r
-  val dependencies = mutable.HashMap.empty[String, List[BagEntry]]
 
   def solve(input: Array[String]) = {
 
-
-    input.foreach(line => {
-
-      if (line.nonEmpty){
-        val x1 = line.replace("bags", "").replace("bag", "").replace(".", "").split("contain")
-        val parent = x1(0).trim
-        val children = x1(1).split(",")
-
-        children.foreach(chUntrimmed => {
-          val ch = chUntrimmed.trim
-
-
-          if (!ch.contains("no other")) {
-            val (fits, child) = pattern.findFirstMatchIn(ch) match {
-              case Some(i) => (i.group(1).toInt, i.group(2).trim)
-              case _ => throw new IllegalArgumentException("regex not found")
-            }
-
-            val prevChildren = dependencies.getOrElse(parent, List.empty)
-
-            dependencies(parent) = prevChildren :+ BagEntry(fits, child)
-          }
-
-        })
+    for (i <- 0 until input.size) {
+      val line = input(i)
+      Computer.readCommandFromLine(line)._1 match {
+        case "nop" =>
+          val nopToJmp = line.replace("nop", "jmp")
+          val newInput: Array[String] = input.updated(i, nopToJmp)
+          new Computer().compute(newInput)
+        case "jmp" =>
+          val jmpToNop = line.replace("jmp", "nop")
+          val newInput: Array[String] = input.updated(i, jmpToNop)
+          new Computer().compute(newInput)
+        case x =>
       }
-
-    })
-
-
-    println(dependencies.mkString("\n"))
-
-    // let's traverse the tree
-
-    var foundChildren: List[BagEntry] = dependencies.getOrElse("shiny gold", List.empty[BagEntry])
-    var tmpChildren = dependencies.getOrElse("shiny gold", List.empty[BagEntry])
-
-    while (tmpChildren.nonEmpty) {
-
-      val newTmpChildren = tmpChildren.flatMap(child => dependencies.getOrElse(child.name, List.empty[BagEntry]).map(e => e.copy(count = e.count * child.count))  )
-      foundChildren = foundChildren ++ newTmpChildren
-
-      tmpChildren = newTmpChildren
 
     }
 
-    println(s"foundChildren ${foundChildren.mkString(",")}")
-    println(s"sum: ${foundChildren.map(_.count).sum}")
-
-
-
-//    var foundParents = Set.empty[String]
-//    var  safetyCount = 0
-//    var tmpParents = findParentsFor("shiny gold")
-//
-//    while (tmpParents.nonEmpty && safetyCount < 1000) {
-//      foundParents = foundParents ++ tmpParents
-//      tmpParents = findParentsWithCheck(tmpParents)
-//      safetyCount = safetyCount + 1
-//      if (safetyCount > 900) {
-//        println("\n\n\n\n\n\n\n\n safety count reached \n\n\n\n\n\n")
-//      }
-//    }
-//
-//    println(foundParents)
-//    println(foundParents.size)
-
   }
-
 
 }
 
+class Computer {
+  val execCounter = mutable.Map.empty[Int, Int]
 
+  var pointer = 0
+  var maxExecCounter = 0
+  var acc = 0
+
+  def compute(input: Array[String]) = {
+    while (maxExecCounter < 2 && pointer < input.length) {
+      val line = input(pointer)
+
+      val (command, value) = Computer.readCommandFromLine(line)
+
+      command match {
+        case "nop" => pointer = pointer + 1
+        case "jmp" => pointer = pointer + value
+        case "acc" =>
+          acc = acc + value
+          pointer = pointer + 1
+        case x     => throw new IllegalArgumentException(s"Unknown operator $x")
+      }
+
+
+      val tmpCounter = execCounter.getOrElse(pointer, 0)
+      val newTmpCounter = tmpCounter + 1
+      execCounter.update(pointer, newTmpCounter)
+      maxExecCounter = Math.max(maxExecCounter, newTmpCounter)
+
+    }
+    val success = input.length == pointer
+    if (success) println("============\n\nsuccess\n\n=============")
+    println(s"input lenght: ${input.length}, pointer: $pointer, max execution counter: $maxExecCounter")
+    println(s"execution finished at line $pointer with accumulator value $acc")
+    success
+
+  }
+
+}
+
+object Computer {
+
+  def readCommandFromLine(line: String) = {
+    val opLine = line.split(' ')
+    val command = opLine(0)
+    val value = opLine(1).replace("+", "").toInt
+    (command, value)
+  }
+}
