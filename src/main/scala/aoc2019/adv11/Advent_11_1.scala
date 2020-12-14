@@ -1,11 +1,11 @@
-package adv11
+package aoc2019.adv11
 
 import scala.collection.mutable
 import scala.io.Source
 
 object Advent_11_1 extends App {
 
-  var fileInputArray: Array[String] = Source.fromResource("advent-11.txt").getLines().toArray
+  var fileInputArray: Array[String] = Source.fromResource("aoc2019/advent-11.txt").getLines().toArray
   var fileInput = fileInputArray(0)
 
   Solution.solve(fileInput)

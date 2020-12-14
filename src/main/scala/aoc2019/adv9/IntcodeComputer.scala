@@ -1,4 +1,4 @@
-package adv11
+package aoc2019.adv9
 
 import scala.io.StdIn
 
@@ -17,7 +17,7 @@ class IntcodeComputer(input: String) {
     var argumentIndex = 0
     var relativeBase = 0
 
-    var programFinished = false // true after execution of command 99 or 4
+    var programFinished = false // true after execution of command 99
     var outputValue: Option[BigDecimal] = None // result of operator 4 or None if operator is 99
 
     while (!programFinished) {
@@ -29,9 +29,7 @@ class IntcodeComputer(input: String) {
         // 1,2,3,4 => add param 2 + param 3 and save it under arr[4]
         case 1 => {
           val params = operator.parseParams(i, 2, memory)
-          var saveIndex = operator.parseSaveIndex(i, 3, memory)
-            //WARNING: Fakap
-          //if (saveIndex < 0) saveIndex = 0
+          val saveIndex = operator.parseSaveIndex(i, 3, memory)
           memory(saveIndex.intValue) = params(0) + params(1)
           i += 4
         }
@@ -50,7 +48,6 @@ class IntcodeComputer(input: String) {
 
           if (args.length > argumentIndex) {
             inputParam = args(argumentIndex)
-            println(s"[3] received input param ${inputParam}")
             argumentIndex += 1
           } else {
             println("[3] Program is expecting input")
@@ -67,7 +64,6 @@ class IntcodeComputer(input: String) {
           val params = operator.parseParams(i, 1, memory)
           println(s"[4] output command: ${params(0)}")
           outputValue = Some(params(0))
-          programFinished = true
           i += 2
         }
 
@@ -164,14 +160,7 @@ class Operator(operation: Int, relativeBase: Int) {
     getModeFor(paramIndex - 1) match {
       case '0' => array(index + paramIndex).intValue
       case '1' => index + paramIndex
-      case '2' => {
-        // WARNING this will BREAK everything...
-
-        val ipi = index + paramIndex
-        val aipi = array(ipi)
-        val result = aipi.intValue + relativeBase
-        result
-      }
+      case '2' => array(index + paramIndex).intValue + relativeBase
     }
   }
 
@@ -179,13 +168,7 @@ class Operator(operation: Int, relativeBase: Int) {
     getModeFor(paramNo) match {
       case '0' => array(array(index).toInt)
       case '1' => array(index)
-      case '2' => {
-        val valueFromArray = array(index).intValue
-        var valueFromArrayWithBase = valueFromArray + relativeBase
-        // WARNING this will BREAK everything...
-        //if (valueFromArrayWithBase < 0) valueFromArrayWithBase = 0
-        array(valueFromArrayWithBase)
-      }
+      case '2' => array(array(index).intValue + relativeBase)
     }
   }
 
