@@ -1,7 +1,5 @@
 package aoc2020.adv04
 
-import com.sun.javaws.exceptions.InvalidArgumentException
-
 import scala.util.Try
 import scala.util.matching.Regex
 
@@ -82,7 +80,7 @@ object Part2 {
         case "ecl" => validateEcl(value)
         case "pid" => validatePid(value)
         case "cid" => true
-        case x => throw new InvalidArgumentException(Array(s"invalid field: $x"))
+        case x => throw new RuntimeException(s"invalid field: $x")
       }
       if (fieldResult == false)
         ok = false

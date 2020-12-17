@@ -1,11 +1,7 @@
 package aoc2020.adv06
 
-import com.sun.javaws.exceptions.InvalidArgumentException
-
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.util.Try
-import scala.util.matching.Regex
 
 object Part2 {
 

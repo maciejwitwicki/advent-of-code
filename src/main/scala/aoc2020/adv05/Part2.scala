@@ -1,10 +1,5 @@
 package aoc2020.adv05
 
-import com.sun.javaws.exceptions.InvalidArgumentException
-
-import scala.util.Try
-import scala.util.matching.Regex
-
 object Part2 {
 
   def solve(input: Array[String]) = {
