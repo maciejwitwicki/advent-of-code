@@ -1,94 +1,113 @@
 package aoc2020.adv22
 
+import scala.collection.immutable.Queue
 import scala.collection.mutable
 
 object Part2 {
   def solve(input: Array[String]) = {
 
-    var allIngredients = Set.empty[String]
-    var recipesAlone = Array.empty[Set[String]]
-    var alergensToSets = mutable.HashMap.empty[String, Array[Set[String]]]
+    val p1Deck = mutable.Queue.empty[Int]
+    val p2Deck = mutable.Queue.empty[Int]
 
-    for (line <- input) {
+    var it = 1
+    while (input(it).nonEmpty) {
 
-      val x1 = line.dropRight(1).split(" \\(contains ")
-      val meals: Set[String] = x1(0).split(" ").toSet
-      val allergens = x1(1).split(", ")
+      val card = input(it).toInt
+      p1Deck.append(card)
 
-      allIngredients = allIngredients ++ meals
-      recipesAlone = recipesAlone :+ meals
+      it = it + 1
+    }
 
-      allergens.foreach(a => {
-        val prevMeals: Array[Set[String]] = alergensToSets.getOrElse(a, Array.empty)
-        val newMeals = prevMeals :+ meals
-        alergensToSets.put(a, newMeals)
+    it = it + 2
+    while (it < input.length) {
 
-      })
+      val card = input(it).toInt
+      p2Deck.append(card)
+
+      it = it + 1
+    }
+
+    println("both decks ready, p1:")
+
+    p1Deck.foreach(println)
+
+    println("p2:")
+
+    p2Deck.foreach(println)
+
+    println("Playing the game")
+
+    // =============================== GAME! ===========================
+
+    playRecursive(p1Deck, p2Deck, 0)
+
+    println("match ended!")
+    val res = if (p1Deck.nonEmpty) p1Deck else p2Deck
+
+    res.foreach(println)
+
+    println("multypling")
+
+    var sum = BigDecimal(0)
+    var multiplier = res.length
+    while (res.nonEmpty) {
+
+      val card = BigDecimal(res.dequeue())
+      sum = sum + (card * multiplier)
+
+      multiplier = multiplier - 1
 
     }
 
-    // print what we got
-    alergensToSets.foreach(al => {
-      println(s"${al._1} -> ${al._2.map(se => se.mkString(", ")).mkString(" and ")}")
-    })
+    println(sum)
 
-    println(s"\nLooking for ingredients that occur in every recipe")
+  }
+
+  private def playRecursive(deck1: mutable.Queue[Int], deck2: mutable.Queue[Int], depth: Int): Boolean = {
+    println(s"Playing game at depth $depth")
+    var it = 0
+    var d1History = Set.empty[mutable.Queue[Int]]
+
+    var infiniteLoopDetected = false
+    while (deck1.nonEmpty && deck2.nonEmpty && !infiniteLoopDetected) {
+
+      if (d1History.contains(deck1)) {
+        println("!!! Warning, infinite loop detected !!!")
+        infiniteLoopDetected = true
+      } else {
+        d1History = d1History + deck1.clone
+
+        val p1Card = deck1.dequeue()
+        val p2Card = deck2.dequeue()
+
+        val recursion = shouldPlayRecursive(p1Card, deck1, p2Card, deck2)
+
+        var p1toTake = Seq.empty[Int]
+        var p2toTake = Seq.empty[Int]
+
+        var p1Wins = false
+        if (recursion) {
+          p1Wins = playRecursive(deck1.take(p1Card), deck2.take(p2Card), depth + 1)
+        } else {
+          if (p1Card > p2Card) p1Wins = true
+        }
+        if (p1Wins)
+          p1toTake = Seq(p1Card, p2Card)
+        else
+          p2toTake = Seq(p2Card, p1Card)
 
 
-    val map2 = mutable.HashMap.empty[String, Set[String]]
-
-    alergensToSets.foreach(al => {
-
-      val name = al._1
-      val sets = al._2
-
-      var it = 0
-
-      var tmpIntersection = sets(it)
-      while (it < sets.length - 1) {
-        tmpIntersection = tmpIntersection.intersect(sets(it + 1))
+        deck1.appendAll(p1toTake)
+        deck2.appendAll(p2toTake)
 
         it = it + 1
       }
-
-      map2.put(name, tmpIntersection)
-
-      println(s"$name -> ${tmpIntersection.mkString(", ")}")
-
-    })
-
-    println(s"\nGeting a map of single alergen - ingredients and multiple one should decrease to 0")
-
-    var (singleIngredients, multipleIngredients) = map2.partition(e => e._2.size == 1)
-
-
-    var process = true
-
-    var c = 0
-    while(process) {
-      println(s"Iteration $c"); c= c + 1
-      val usedIngredients = singleIngredients.values.flatten.toSet
-
-      val filteredMulti = multipleIngredients.map(entry => {
-        val ingredients = entry._2
-
-        val newIngredients = ingredients.diff(usedIngredients)
-
-        entry._1 -> newIngredients
-      })
-
-      val (newSingle, newMulti) = filteredMulti.partition(e => e._2.size == 1)
-
-      if (newMulti.isEmpty) process = false
-      singleIngredients = singleIngredients ++ newSingle
-      multipleIngredients = newMulti
     }
 
-    singleIngredients.foreach(e => println(s"${e._1} -> ${e._2.head}"))
+    deck1.nonEmpty
+  }
 
-    val res = singleIngredients.toList.sortBy(_._1).map(_._2.head).mkString(",")
-    println(res)
-
-
+  private def shouldPlayRecursive(c1: Int, d1: mutable.Queue[Int], c2: Int, d2: mutable.Queue[Int]) = {
+    d1.size >= c1 && d2.size >= c2
   }
 }
