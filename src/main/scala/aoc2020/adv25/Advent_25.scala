@@ -1,8 +1,8 @@
-package aoc2020.adv24
+package aoc2020.adv25
 
 import scala.io.Source
 
-object Advent_24 extends App {
+object Advent_25 extends App {
 
   val inputFileName = this.getClass.getSimpleName.replace("_", "-").replace("$", "").toLowerCase
 
@@ -34,8 +34,7 @@ object Advent_24 extends App {
 
 
    val input1 = Source.fromString(s1).getLines().toArray
-   val input2 = Array("nwwswee")
 
-  // Part1.solve(inputFile)
-   Part2.solve(inputFile)
+   Part1.solve(input1)
+//   Part2.solve(input1)
 }

@@ -1,61 +1,66 @@
 package aoc2020.adv24
 
+import scala.collection.mutable
+
 object Part1 {
 
+
+  case class Loc(x: Int, y: Int)
+
+  val tiles = mutable.HashMap.empty[Loc, Boolean]
+
   def solve(input: Array[String]) = {
-    var cups: Array[Int] = input(0).toCharArray.map(c => c.toString).map(Integer.parseInt)
-    val lowestLabel = cups.min
-    val highestLabel = cups.max
-    var it = 0
-    var currentIndex = 0
 
-    while (it < 100) {
-      val currentCup = cups(currentIndex)
+    var lineCount = 0
+    for (line <- input) {
 
-      val p1Idx = (currentIndex + 1) % cups.length
-      val p2Idx = (currentIndex + 2) % cups.length
-      val p3Idx = (currentIndex + 3) % cups.length
-      val pickUp = Array(cups(p1Idx), cups(p2Idx), cups(p3Idx))
-      val pickUpIndexes = Array(p1Idx, p2Idx, p3Idx)
+      var i = 0
+      var x: Int = 0
+      var y: Int = 0
 
-      // cups without picked cups
-      var newCups = Array.empty[Int]
-      var tmpIt = 0
-      while(tmpIt < cups.length) {
-        if (!pickUpIndexes.contains(tmpIt)) newCups = newCups :+ cups(tmpIt)
-        tmpIt = tmpIt + 1
+      while(i < line.length) {
+
+        val letter = line(i)
+        val direction = letter match {
+          case 's' => {
+            val sx = "s" + line(i + 1)
+            i = i + 1
+            sx
+          }
+          case 'n' => {
+            val nx = "n" + line(i + 1)
+            i = i + 1
+            nx
+          }
+          case x => x.toString
+        }
+
+        val dx: Int = if (y % 2 == 0) {
+          //println("y modulo 2 is 0, sw will decrease x, se not")
+          1
+        } else 0
+
+        direction match {
+          case "e" =>  x = x + 1
+          case "w" =>  x = x - 1
+          case "se" => y = y + 1; x = x + dx
+          case "sw" => y = y + 1; x = x -1 + dx
+          case "ne" => y = y - 1; x = x + dx
+          case "nw" => y = y - 1; x = x - 1 + dx
+        }
+
+        i = i + 1
       }
-
-
-      // find destination label
-      var destinationLabel = currentCup - 1
-      if (destinationLabel < lowestLabel) destinationLabel = highestLabel
-
-      while (pickUp.contains(destinationLabel)) {
-        destinationLabel = destinationLabel - 1
-        if (destinationLabel < lowestLabel) destinationLabel = highestLabel
-      }
-
-      // destination idx
-      val destIdx = (newCups.indexOf(destinationLabel) + 1)
-      val (dstPrefix, dstSuffix) = newCups.splitAt(destIdx)
-
-      val result = dstPrefix ++ pickUp ++ dstSuffix
-
-      println(result.mkString)
-      cups = result
-
-      currentIndex = (cups.indexOf(currentCup) + 1) % cups.length
-
-      it = it + 1
+      val isWhite = tiles.getOrElse(Loc(x,y), true) // true means white
+      val newColor = !isWhite  // flip the color
+      tiles.put(Loc(x, y), newColor)
+      lineCount = lineCount + 1
+      println(s"instruction $lineCount ends on x: $x y: $y with color (white = true, black = false) $newColor")
     }
 
-    println("Iterations finished, calculating result")
-
-    val (resultPrefix, resultPostfix) = cups.splitAt(cups.indexOf(1))
-    val result = resultPostfix.drop(1) ++ resultPrefix
-
-    println(result.mkString)
+    val res = tiles.values.count(p => !p)
+    println(s"There are $res of black tiles")
 
   }
+
 }
