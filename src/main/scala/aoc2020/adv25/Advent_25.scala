@@ -9,26 +9,7 @@ object Advent_25 extends App {
   var inputFile: Array[String] = Source.fromResource(s"aoc2020/$inputFileName.txt").getLines().toArray
 
   val s1 =
-    """sesenwnenenewseeswwswswwnenewsewsw
-      |neeenesenwnwwswnenewnwwsewnenwseswesw
-      |seswneswswsenwwnwse
-      |nwnwneseeswswnenewneswwnewseswneseene
-      |swweswneswnenwsewnwneneseenw
-      |eesenwseswswnenwswnwnwsewwnwsene
-      |sewnenenenesenwsewnenwwwse
-      |wenwwweseeeweswwwnwwe
-      |wsweesenenewnwwnwsenewsenwwsesesenwne
-      |neeswseenwwswnwswswnw
-      |nenwswwsewswnenenewsenwsenwnesesenew
-      |enewnwewneswsewnwswenweswnenwsenwsw
-      |sweneswneswneneenwnewenewwneswswnese
-      |swwesenesewenwneswnwwneseswwne
-      |enesenwswwswneneswsenwnewswseenwsese
-      |wnwnesenesenenwwnenwsewesewsesesew
-      |nenewswnwewswnenesenwnesewesw
-      |eneswnwswnwsenenwnwnwwseeswneewsenese
-      |neswnwewnwnwseenwseesewsenwsweewe
-      |wseweeenwnesenwwwswnew
+    """
       |""".stripMargin
 
 
