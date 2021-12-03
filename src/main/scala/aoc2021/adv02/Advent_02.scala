@@ -17,6 +17,6 @@ object Advent_02 extends App2021 {
   val input = getInput(this.getClass)
 
   Part1.solve(input)
-  Part1.solve(input)
+  Part2.solve(input)
 
 }
