@@ -1,10 +1,10 @@
-package aoc2021.adv04
+package aoc2021.adv05
 
 import aoc2021.App2021
 
-object Advent_04 extends App2021 {
+object Advent_05 extends App2021 {
 
-  val s1 =
+  val exampleString =
     """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
       |
       |22 13 17 11  0
@@ -27,11 +27,11 @@ object Advent_04 extends App2021 {
       |
       |""".stripMargin
 
-  val example = getInput(s1)
+  val example = getInput(exampleString)
 
   val input = getInput(this.getClass)
 
   Part1.solve(input)
-  Part2.solve(input)
+
 
 }

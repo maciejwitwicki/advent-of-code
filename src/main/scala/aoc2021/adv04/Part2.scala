@@ -2,7 +2,7 @@ package aoc2021.adv04
 
 import scala.collection.mutable.ArrayBuffer
 
-object Part1 {
+object Part2 {
   def solve(input: Array[String]): Unit = {
 
     val (numbersString, boardsString) = input.splitAt(2)
@@ -15,17 +15,17 @@ object Part1 {
 
 
     var numberIndex = 0
-    while (bingo.winningBoard == null && numberIndex < numbers.length) {
+    while (!bingo.boards.isEmpty && numberIndex < numbers.length) {
       val number = numbers(numberIndex)
       println(s"======= $number ===========")
       bingo.mark(number)
       println(bingo)
-      if (bingo.winningBoard == null) {
+      if (!bingo.boards.isEmpty) {
         numberIndex += 1
       } else {
-        val unmarkedNumbersSum = bingo.winningBoard.getUnmarkedSum
+        val unmarkedNumbersSum = bingo.winningBoards.last.getUnmarkedSum
 
-        println(s"number $number was last, score = ${unmarkedNumbersSum * number}, winning board: \n ${bingo.winningBoard}")
+        println(s"number $number was last, score = ${unmarkedNumbersSum * number}, last winning board: \n ${bingo.winningBoards.last}")
 
       }
     }
@@ -62,23 +62,28 @@ object Part1 {
 
   }
 
-  case class Bingo(var boards: Array[Board], var winningBoard: Board = null) {
+  case class Bingo(var boards: Array[Board], var winningBoards: Array[Board] = Array.empty) {
 
     def mark(number: Int) = {
       this.boards = boards.map(b => b.mark(number))
 
       boards.foreach(b => {
-        if (b.hasRowOrCol) winningBoard = b
+        if (b.hasRowOrCol) {
+          winningBoards = winningBoards.appended(b)
+        }
       })
+
+      boards = boards.filter(b => !b.won)
+
     }
 
     override def toString: String = {
-      boards.mkString("\n")
+      s"playing boards:\n ${boards.mkString("\n")}, winning boards:\n ${winningBoards.mkString("\n")}"
     }
   }
 
 
-  case class Board(rows: Array[Row]) {
+  case class Board(rows: Array[Row], var won: Boolean = false) {
 
     def getUnmarkedSum: Int = {
       rows.flatMap(r => r.elements)
@@ -88,10 +93,14 @@ object Part1 {
     }
 
     def hasRowOrCol: Boolean = {
-      rows.exists(r => {
+      val itWon = rows.exists(r => {
         val allElementsInRowMarked = r.elements.forall(e => e.marked)
         allElementsInRowMarked
       }) || anyColumnMatches()
+
+      won = itWon
+
+      itWon
     }
 
     def mark(number: Int): Board = {
