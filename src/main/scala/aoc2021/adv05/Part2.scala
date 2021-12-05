@@ -1,15 +1,16 @@
 package aoc2021.adv05
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
-object Part1 {
+object Part2 {
 
   def solve(input: Array[String]): Unit = {
 
     val lines = parseLines(input)
 
     val grid = lines.filter(l => {
-      l.isHorizontal || l.isVertical
+      l.isHorizontal || l.isVertical || l.isDiagonal
     })
       .foldLeft(mutable.Map.empty[Point, Int])((acc, line) => {
         line.getAllPoints
@@ -20,10 +21,14 @@ object Part1 {
          acc
       })
 
-    grid.foreach(el => println(el._1 + "- > " + el._2))
+
+    grid
+      .toList
+      .sortBy(el => el._1.x)
+      .foreach(el => println(el._1 + "- > " + el._2))
     val result = grid.values.count(e => e > 1)
 
-    print(s"overlapping points count: $result")
+    println(s"overlapping points count: $result")
 
   }
 
@@ -46,12 +51,22 @@ object Part1 {
   case class Line(start: Point, end: Point) {
 
     def getAllPoints: List[Point] = {
-      val (x1, x2) = sort(start.x, end.x)
-      val (y1, y2) = sort(start.y, end.y)
-      val list = (x1 to x2).flatMap(i => {
-        (y1 to y2).map(j => Point(i, j))
-      }).toList
-      list
+
+      val xes = createRange(start.x, end.x)
+      val yes = createRange(start.y, end.y)
+
+      val result = ArrayBuffer.empty[Point]
+      var i,j = 0
+      var xDone, yDone = false
+      while (!(xDone && yDone )) {
+        val x = xes(i)
+        val y = yes(j)
+        result.append(Point(x, y))
+        if (i < xes.length - 1) i+=1 else xDone = true
+        if (j < yes.length - 1) j+=1 else yDone = true
+      }
+
+      result.toList
     }
 
     def isHorizontal: Boolean = {
@@ -62,9 +77,16 @@ object Part1 {
       start.y == end.y
     }
 
-    private def sort(a: Int, b: Int) = {
-      if (a > b) (b, a)
-      else (a, b)
+    def isDiagonal: Boolean = {
+      val diffX = start.x - end.x
+      val diffY = start.y - end.y
+      Math.abs(diffX) == Math.abs(diffY)
+    }
+
+    private def createRange(start: Int, end: Int): Range = {
+      if (start > end) {
+        (end to start).reverse
+      } else start to end
     }
   }
 

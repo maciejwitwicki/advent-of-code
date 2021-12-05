@@ -1,8 +1,8 @@
-package aoc2021.adv05
+package aoc2021.adv06
 
 import aoc2021.App2021
 
-object Advent_05 extends App2021 {
+object Advent_06 extends App2021 {
 
   val exampleString =
     """0,9 -> 5,9
@@ -18,11 +18,8 @@ object Advent_05 extends App2021 {
       |""".stripMargin
 
   val example = getInput(exampleString)
-
   val input = getInput(this.getClass)
 
-  Part1.solve(input)
-  Part2.solve(input)
-
+  Part1.solve(example)
 
 }
