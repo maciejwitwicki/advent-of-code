@@ -29,7 +29,7 @@ object Part1 {
       })
     })
 
-    map.values.toList.sortBy(_.neighbors.size).foreach(e => println(e.id, e.neighbors ))
+    map.values.toList.sortBy(_.neighbors.size).foreach(e => println(s"${e.id}, ${e.neighbors}"))
 
     println(s"multiplying only those with 2 neighbours")
 

@@ -26,7 +26,7 @@ object Part1 {
       tmpGroup = Set.empty[Char]
     }
 
-    val resStr = allGroups.foreach(g => println(g.mkString(",")) + "\n")
+    val resStr = allGroups.foreach(g => println(g.mkString(",")) )
 
     val res = allGroups.map(g => g.size).sum
 

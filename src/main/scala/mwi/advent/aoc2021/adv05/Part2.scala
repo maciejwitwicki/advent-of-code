@@ -25,7 +25,7 @@ object Part2 {
     grid
       .toList
       .sortBy(el => el._1.x)
-      .foreach(el => println(el._1 + "- > " + el._2))
+      .foreach(el => println(s"${el._1} - > ${el._2}"))
     val result = grid.values.count(e => e > 1)
 
     println(s"overlapping points count: $result")

@@ -20,7 +20,7 @@ object Part1 {
          acc
       })
 
-    grid.foreach(el => println(el._1 + "- > " + el._2))
+    grid.foreach(el => println(s"${el._1} - > ${el._2}"))
     val result = grid.values.count(e => e > 1)
 
     print(s"overlapping points count: $result")
