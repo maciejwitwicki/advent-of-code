@@ -4,40 +4,53 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ArrayStack}
 
-object Part1 {
+object Part2 {
 
   val grid = mutable.HashMap.empty[Loc, Int]
   var maxX = 0
   var maxY = 0
-  var totalFlashCount: Long = 0
 
   def solve(input: Array[String]): Unit = {
     parseInput(input);
     printGrid();
 
-    val steps = 100
-
-    for (x <- 0 until steps) {
+    var allFlashed = false
+    var x = 0
+    while(!allFlashed) {
 
       grid.foreach(e => grid(e._1) = e._2 + 1)
 
       handleFlashes(grid.filter(e => e._2 > 9).keys.toList)
 
-      setFlashedToZero()
+      allFlashed = setFlashedToZero(x)
 
+      if (x % 100 == 0) {
+        println(s"step $x")
+        printGrid()
+      }
+
+      x += 1
     }
 
     printGrid()
-    println(s"total flash count ${totalFlashCount}")
 
   }
 
-  private def setFlashedToZero(): Unit = {
+  private def setFlashedToZero(step: Int): Boolean = {
+    var flashed = 0
     grid.filter(e => e._2 == -1)
     .foreach(e => {
       grid(e._1) = 0
-      totalFlashCount += 1
+      flashed += 1
     })
+
+    if (flashed == grid.size) {
+      println(s"all flashed after step: ${step+1}")
+      true
+    } else {
+      false
+    }
+
   }
 
   @tailrec
@@ -63,7 +76,7 @@ object Part1 {
       handleFlashes(higherThanNine)
   }
 
-  private def getAdjacent(loc: Part1.Loc) = {
+  private def getAdjacent(loc: Part2.Loc) = {
     List(-1, 0, 1).flatMap(
       y => List(-1, 0, 1).map(x => {
         Loc(loc.x + x, loc.y + y)

@@ -1,4 +1,4 @@
-package mwi.advent.aoc2021.adv11
+package mwi.advent.aoc2021.adv12
 
 import scala.annotation.tailrec
 import scala.collection.mutable
