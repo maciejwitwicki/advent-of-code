@@ -1,21 +1,21 @@
 package mwi.advent.aoc2021.adv12
 
-
 import mwi.advent.aoc2021.adv12.Node
+
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object Part1 {
+object Part2 {
 
 
   var foundPaths = ArrayBuffer.empty[Seq[String]]
   var graph: Map[String, Node] = Map.empty
 
 
-  def solve(input: Array[String]): Unit = {
-
-    this.graph =  GraphBuilder.build(input)
+  def solve(input: Array[String]) = {
+    
+    this.graph = GraphBuilder.build(input)
     
     val start = graph("start")
     val pathSoFar: List[String] = List("start")
@@ -37,9 +37,28 @@ object Part1 {
 
       if (nodeName == "end") {
         foundPaths.append(path :+ "end")
-      } else if (node.big || (!node.big && !path.contains(nodeName))) {
+      } else if (node.big) {
         goNextStep(node.neighbours, path :+ node.name)
+      } else if (!node.big) {
+        val lowercases = path.drop(1) // no "start"
+          .filter(n => n.toLowerCase.equals(n))
+
+        val groupped = lowercases // only lowercases
+          .groupBy(s => s)
+
+        val duplicates = groupped // group by letter
+          .values
+          .count(e => e.length > 1)
+
+        if (duplicates >= 1) {
+          if (!path.contains(nodeName)) {
+            goNextStep(node.neighbours, path :+ node.name)
+          }
+        } else if (!(path.count(x => x.equals(nodeName)) == 2)) {
+          goNextStep(node.neighbours, path :+ node.name)
+        }
       }
+
     })
   }
 

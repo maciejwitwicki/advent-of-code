@@ -1,9 +1,9 @@
-package mwi.advent.aoc2021.adv12
+package mwi.advent.aoc2021.adv13
 
 import mwi.advent.aoc2021.App2021
 import mwi.advent.aoc2021.adv12.GraphBuilder.build
 
-object Advent_12 extends App2021 {
+object Advent_13 extends App2021 {
 
   val exampleString =
     """|start-A
@@ -20,6 +20,5 @@ object Advent_12 extends App2021 {
   val input = getInput(this.getClass)
 
   Part1.solve(input)
-  Part2.solve(input)
 
 }
