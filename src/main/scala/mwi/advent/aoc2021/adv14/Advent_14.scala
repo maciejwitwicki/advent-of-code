@@ -1,8 +1,8 @@
-package mwi.advent.aoc2021.adv13
+package mwi.advent.aoc2021.adv14
 
 import mwi.advent.aoc2021.App2021
 
-object Advent_13 extends App2021 {
+object Advent_14 extends App2021 {
 
   val exampleString =
     """|6,10
@@ -33,6 +33,5 @@ object Advent_13 extends App2021 {
   val input = getInput(this.getClass)
 
   Part1.solve(input)
-  Part2.solve(input)
 
 }
