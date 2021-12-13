@@ -25,7 +25,7 @@ object Part2 {
       })
       .sum
 
-  println(s"Increasing $increasing")
+    println(s"Increasing $increasing")
 
   }
 }

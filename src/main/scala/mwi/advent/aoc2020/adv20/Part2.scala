@@ -11,10 +11,10 @@ object Part2 {
   val pattern = """^Tile (\d+):$""".r
 
   val dragonStr =
-  """                  #
-    |#    ##    ##    ###
-    | #  #  #  #  #  #
-    |""".stripMargin
+    """                  #
+      |#    ##    ##    ###
+      | #  #  #  #  #  #
+      |""".stripMargin
 
   val dragon = Source.fromString(dragonStr).getLines().toArray
 
@@ -136,7 +136,7 @@ object Part2 {
   }
 
   private def hasMainDragonLine(image: Array[String], y: Int, x: Int) = {
-    val firstLineLocations = List(0, 5, 6, 11, 12, 17, 18, 19 )
+    val firstLineLocations = List(0, 5, 6, 11, 12, 17, 18, 19)
     firstLineLocations.forall(l => image(y)(x + l) == '#')
   }
 
@@ -162,18 +162,18 @@ object Part2 {
     var y = maxY
     var result = Array.empty[String]
     while (y >= minY) {
-     var tmpLines = Array.empty[String]
+      var tmpLines = Array.empty[String]
       for (l <- 0 until tileHeight) {
         var strTemp = ""
         for (x <- minX to maxX) {
           strTemp = strTemp + puzzle.get(Loc(x, y)).map(tile => tile.initialDrawing(l)).getOrElse(" " * tileWidth)
         }
-       tmpLines = tmpLines :+ strTemp
+        tmpLines = tmpLines :+ strTemp
       }
       result = result :++ tmpLines
       y = y - 1
     }
-  result
+    result
   }
 
   private def removeBorders(tiles: Iterable[Tile]) = {

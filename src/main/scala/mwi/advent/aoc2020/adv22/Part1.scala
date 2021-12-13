@@ -48,7 +48,7 @@ object Part1 {
       if (p1Card > p2Card) p1Deck.appendAll(Seq(p1Card, p2Card))
       if (p2Card > p1Card) p2Deck.appendAll(Seq(p2Card, p1Card))
 
-    it = it + 1
+      it = it + 1
     }
 
     println("match ended!")

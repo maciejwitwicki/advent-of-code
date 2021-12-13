@@ -7,7 +7,7 @@ object Part1 {
 
   def solve(input: Array[String]) = {
 
-    val x = Integer.parseInt("100",2)
+    val x = Integer.parseInt("100", 2)
     println(x)
 
     val maxi = input.map(line => {
@@ -21,14 +21,13 @@ object Part1 {
       println(s"row: $rowInt col: $colInt")
 
       val r = rowInt * 8 + colInt
-  println(r)
+      println(r)
       r
     }).max
 
-println(s"maxi: $maxi")
+    println(s"maxi: $maxi")
 
   }
-
 
 
 }

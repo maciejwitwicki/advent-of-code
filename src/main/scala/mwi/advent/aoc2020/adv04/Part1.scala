@@ -5,7 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 
 object Part1 {
 
-  val requiredFields =  Set("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
+  val requiredFields = Set("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
 
   def solve(input: Array[String]) = {
 
@@ -24,11 +24,11 @@ object Part1 {
     if (tmpEntry.nonEmpty)
       fullInputs = fullInputs :+ tmpEntry
 
-  println(fullInputs)
+    println(fullInputs)
     println(s"tmp entry: $tmpEntry")
 
-  val result = fullInputs.count(i => allFieldsPresent(i))
-  println(s"Result $result")
+    val result = fullInputs.count(i => allFieldsPresent(i))
+    println(s"Result $result")
 
   }
 

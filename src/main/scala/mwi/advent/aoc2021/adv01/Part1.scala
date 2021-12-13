@@ -9,7 +9,7 @@ object Part1 {
       .map(window => {
         var a = window(0)
         var b = window(1)
-//        println(s"comparing $a -> $b")
+        //        println(s"comparing $a -> $b")
         if (b > a) {
           1
         } else {
@@ -18,7 +18,7 @@ object Part1 {
       })
       .sum
 
-  println(s"Increasing $increasing")
+    println(s"Increasing $increasing")
 
   }
 }
