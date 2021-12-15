@@ -5,31 +5,24 @@ import mwi.advent.aoc2021.App2021
 object Advent_15 extends App2021 {
 
   val exampleString =
-    """|NNCB
-       |
-       |CH -> B
-       |HH -> N
-       |CB -> H
-       |NH -> C
-       |HB -> C
-       |HC -> B
-       |HN -> C
-       |NN -> C
-       |BH -> H
-       |NC -> B
-       |NB -> B
-       |BN -> B
-       |BB -> N
-       |BC -> B
-       |CC -> N
-       |CN -> C
+    """|1163751742
+       |1381373672
+       |2136511328
+       |3694931569
+       |7463417111
+       |1319128137
+       |1359912421
+       |3125421639
+       |1293138521
+       |2311944581
        |""".stripMargin
 
 
   val example = getInput(exampleString)
   val input = getInput(this.getClass)
 
-  Part1.solve(example)
+  //Part1.solve(input)
+  Part2.solve(input)
 
 
 }
