@@ -9,27 +9,27 @@ object Part2 {
 
   private val grid = mutable.HashMap.empty[Loc, Point]
   private var maxX, maxY, baseGridLength, baseGridHeight = 0
-  val closedset = ArrayBuffer.empty[Loc]
-  val openset: ArrayBuffer[Loc] = ArrayBuffer.empty //ArrayBuffer(getAdjacentLocs(Loc(0, 0)): _*) :+ Loc(0, 0)
+  val closedset = mutable.HashSet.empty[Loc]// ArrayBuffer.empty[Loc]
+  val openset = mutable.HashSet.empty[Loc]// ArrayBuffer.empty
   val gScore = mutable.HashMap.empty[Loc, Double]
   val hScore = mutable.HashMap.empty[Loc, Double]
   val fScore = mutable.HashMap.empty[Loc, Double]
   val cameFrom = mutable.HashMap.empty[Loc, Loc]
+  var iteration = 0;
 
   def solve(input: Array[String]): Unit = {
 
     parseGrid(input)
     printGrid()
 
-    var iteration = 0;
-
-
     gScore(Loc(0, 0)) = 0
     fScore(Loc(0, 0)) = 0
 
-    openset.append(Loc(0, 0))
+    openset.add(Loc(0, 0))
 
     var finalPath = ArrayBuffer.empty[Loc]
+
+    val start: BigInt = BigInt(System.currentTimeMillis()) / 1000
 
     while (openset.nonEmpty) {
 
@@ -37,7 +37,7 @@ object Part2 {
 
       val curPos = getAdjacentWithLowestFscore(openset)
 
-      if (iteration % 1000 == 0) {
+      if (iteration % 100000 == 0) {
         printProgress(reconstructPath(cameFrom, curPos))
       }
 
@@ -49,7 +49,7 @@ object Part2 {
 
         openset.filterInPlace(el => el != curPos)
 
-        closedset.append(curPos)
+        closedset.add(curPos)
 
         val newAdjacents = getAdjacentLocs(curPos)
 
@@ -61,7 +61,7 @@ object Part2 {
             var tentativeIsBetter = false
 
             if (!openset.contains(neighbor)) {
-              openset.append(neighbor)
+              openset.add(neighbor)
               val heuristic = calculateHeuristicsFor(neighbor)
               hScore(neighbor) = heuristic
               tentativeIsBetter = true
@@ -72,28 +72,37 @@ object Part2 {
             if (tentativeIsBetter) {
               cameFrom(neighbor) = curPos
               gScore(neighbor) = tentativeGscore
-              fScore(neighbor) = gScore(neighbor) + hScore(neighbor)
+              fScore(neighbor) = tentativeGscore + hScore(neighbor)
             }
           })
 
       }
     }
 
+    val end: BigInt = BigInt(System.currentTimeMillis()) / 1000
+
+    val elapsed: BigInt = end - start
+
     println(s"Finished")
 
     println(finalPath.mkString(" -> "))
 
-    val riskSum = finalPath.map(l => grid(l).risk).sum + 1
-    println(s"risk sum $riskSum")
+    printProgress(finalPath)
+
+    val riskSum = finalPath.map(l => grid(l).risk).sum
+    println(s"risk sum $riskSum, took $elapsed s")
   }
 
   private def printProgress(path: ArrayBuffer[Loc]): Unit = {
-    println("\n")
+    println("\u001b[2J")
+    println(s"iteration: $iteration")
     for (y <- 0 to maxY) {
       for (x <- 0 to maxX) {
         val risk = grid(Loc(x, y)).risk
         if (path.contains(Loc(x, y))) {
           print(Console.YELLOW + risk.toString)
+        } else if (closedset.contains(Loc(x, y))) {
+          print (Console.GREEN + risk.toString)
         } else {
           print(Console.RESET + risk.toString)
         }
@@ -102,7 +111,7 @@ object Part2 {
     }
   }
 
-  private def getAdjacentWithLowestFscore(adjacents: ArrayBuffer[Loc]): Loc = {
+  private def getAdjacentWithLowestFscore(adjacents: mutable.HashSet[Loc]): Loc = {
     val value1 = fScore.filter(el => adjacents.contains(el._1))
     val locWithMinFscore = value1.toList.minBy(el => el._2)
     locWithMinFscore._1
@@ -157,7 +166,8 @@ object Part2 {
 
           val baseLoc = Loc(x - singleGridLength, y)
           val prevValue = grid(baseLoc).risk
-          val newValue = (prevValue + 1) % 9
+          var newValue = prevValue + 1
+          if (newValue > 9) newValue = 1
           grid(Loc(x, y)) = Point(newValue, false)
         }
       }
@@ -178,8 +188,6 @@ object Part2 {
           var newValue = prevValue + 1
           if (newValue > 9) newValue = 1
           grid(Loc(x, y)) = Point(newValue, false)
-          val asdf = grid
-          val contains = asdf.contains(Loc(49, 10))
         }
       }
     }

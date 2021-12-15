@@ -37,7 +37,7 @@ object Part1 {
 
       val curPos = getAdjacentWithLowestFscore(openset)
 
-      if (iteration % 1000 == 0) {
+      if (iteration % 1 == 0) {
         printProgress(reconstructPath(cameFrom, curPos))
       }
 
@@ -88,12 +88,14 @@ object Part1 {
   }
 
   private def printProgress(path: ArrayBuffer[Loc]): Unit = {
-    println("\n")
-    for (y <- 0 until maxY) {
-      for (x <- 0 until maxX) {
+    println("\u001b[2J")
+    for (y <- 0 to maxY) {
+      for (x <- 0 to maxX) {
         val risk = grid(Loc(x, y)).risk
         if (path.contains(Loc(x, y))) {
           print(Console.YELLOW + risk.toString)
+        } else if (closedset.contains(Loc(x, y))) {
+          print (Console.GREEN + risk.toString)
         } else {
           print(Console.RESET + risk.toString)
         }
