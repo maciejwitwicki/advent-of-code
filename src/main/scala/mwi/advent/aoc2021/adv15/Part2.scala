@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 
 object Part2 {
 
-  private val grid = mutable.HashMap.empty[Loc, Point]
+  private val grid = mutable.HashMap.empty[Loc, Int]
   private var maxX, maxY, baseGridLength, baseGridHeight = 0
   val closedset = mutable.HashSet.empty[Loc]// ArrayBuffer.empty[Loc]
   val openset = mutable.HashSet.empty[Loc]// ArrayBuffer.empty
@@ -20,7 +20,7 @@ object Part2 {
   def solve(input: Array[String]): Unit = {
 
     parseGrid(input)
-    printGrid()
+    // printGrid()
 
     gScore(Loc(0, 0)) = 0
     fScore(Loc(0, 0)) = 0
@@ -35,11 +35,15 @@ object Part2 {
 
       iteration += 1
 
-      val curPos = getAdjacentWithLowestFscore(openset)
+      val curPos = getNodeWithLowestFscore
 
-      if (iteration % 100000 == 0) {
-        printProgress(reconstructPath(cameFrom, curPos))
-      }
+//      if (iteration % 1000 == 0) {
+//        printProgress(reconstructPath(cameFrom, curPos))
+//      }
+
+//      if (iteration % 10000 == 0) {
+//        println(s"Iteration $iteration, ${closedset.size} / ${grid.size}")
+//      }
 
       if (curPos.x == maxX && curPos.y == maxY) {
         println("at the target")
@@ -48,14 +52,13 @@ object Part2 {
       } else {
 
         openset.filterInPlace(el => el != curPos)
-
         closedset.add(curPos)
 
         val newAdjacents = getAdjacentLocs(curPos)
 
         newAdjacents.filterNot(a => closedset.contains(a))
           .foreach(neighbor => {
-            val distBetweenXandY = grid(neighbor).risk
+            val distBetweenXandY = grid(neighbor)
             val tentativeGscore: Double = gScore(curPos) + distBetweenXandY
 
             var tentativeIsBetter = false
@@ -87,9 +90,9 @@ object Part2 {
 
     println(finalPath.mkString(" -> "))
 
-    printProgress(finalPath)
+    //printProgress(finalPath)
 
-    val riskSum = finalPath.map(l => grid(l).risk).sum
+    val riskSum = finalPath.map(l => grid(l)).sum
     println(s"risk sum $riskSum, took $elapsed s")
   }
 
@@ -98,7 +101,7 @@ object Part2 {
     println(s"iteration: $iteration")
     for (y <- 0 to maxY) {
       for (x <- 0 to maxX) {
-        val risk = grid(Loc(x, y)).risk
+        val risk = grid(Loc(x, y))
         if (path.contains(Loc(x, y))) {
           print(Console.YELLOW + risk.toString)
         } else if (closedset.contains(Loc(x, y))) {
@@ -111,10 +114,8 @@ object Part2 {
     }
   }
 
-  private def getAdjacentWithLowestFscore(adjacents: mutable.HashSet[Loc]): Loc = {
-    val value1 = fScore.filter(el => adjacents.contains(el._1))
-    val locWithMinFscore = value1.toList.minBy(el => el._2)
-    locWithMinFscore._1
+  private def getNodeWithLowestFscore: Loc = {
+    openset.map(i => (i, fScore(i))).minBy(el => el._2)._1
   }
 
   private def calculateHeuristicsFor(pos: Loc): Double = {
@@ -141,7 +142,7 @@ object Part2 {
     for (y <- 0 until input.length) {
       for (x <- 0 until input(y).length) {
         val value = Integer.parseInt(s"${input(y)(x)}")
-        grid.put(Loc(x, y), Point(value, false))
+        grid.put(Loc(x, y), value)
       }
     }
 
@@ -165,10 +166,10 @@ object Part2 {
         for (x <- newX until newX + singleGridLength) {
 
           val baseLoc = Loc(x - singleGridLength, y)
-          val prevValue = grid(baseLoc).risk
+          val prevValue = grid(baseLoc)
           var newValue = prevValue + 1
           if (newValue > 9) newValue = 1
-          grid(Loc(x, y)) = Point(newValue, false)
+          grid(Loc(x, y)) = newValue
         }
       }
     }
@@ -184,10 +185,10 @@ object Part2 {
         for (x <- newX to maxX) {
 
           val baseLoc = Loc(x, y - singleGridHeight)
-          val prevValue = grid(baseLoc).risk
+          val prevValue = grid(baseLoc)
           var newValue = prevValue + 1
           if (newValue > 9) newValue = 1
-          grid(Loc(x, y)) = Point(newValue, false)
+          grid(Loc(x, y)) = newValue
         }
       }
     }
@@ -210,7 +211,7 @@ object Part2 {
       }
 
       for (x <- 0 to maxX) {
-        line += grid(Loc(x, y)).risk
+        line += grid(Loc(x, y))
       }
       println(line)
     }
@@ -232,5 +233,4 @@ object Part2 {
     possibleAdjacents
   }
 
-  private case class Point(risk: Int, visited: Boolean)
 }
