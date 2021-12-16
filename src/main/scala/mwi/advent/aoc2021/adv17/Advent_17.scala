@@ -1,8 +1,8 @@
-package mwi.advent.aoc2021.adv16
+package mwi.advent.aoc2021.adv17
 
 import mwi.advent.aoc2021.App2021
 
-object Advent_16 extends App2021 {
+object Advent_17 extends App2021 {
 
   val exampleString =
     """|C200B40A82
@@ -19,7 +19,6 @@ object Advent_16 extends App2021 {
   val example = getInput(exampleString)
   val input = getInput(this.getClass)
 
-  //Part1.solve(input)
-  Part2.solve(input)
+  Part1.solve(example)
 
 }
