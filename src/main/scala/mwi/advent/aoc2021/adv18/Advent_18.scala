@@ -10,7 +10,7 @@ object Advent_18 extends App2021 {
 
 
   val example = getInput(exampleString)
-  val input = getInput(this.getClass)
+  //val input = getInput(this.getClass)
 
   Part1.solve(example)
 
