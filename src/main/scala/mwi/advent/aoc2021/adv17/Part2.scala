@@ -6,7 +6,7 @@ import mwi.advent.util.Loc
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object Part1 {
+object Part2 {
 
   private var target = Target(0, 0, 0, 0)
   private final val Margin = 10
@@ -19,22 +19,25 @@ object Part1 {
 
     printGrid()
 
-    var maxHitY = Int.MinValue
 
-    val initialXvelocity = 1
-    val initialYvelocity = 0
+    var foundVelocities = mutable.HashSet.empty[Loc]
+
+    val initialXvelocity = 0
+    val maxX = initialXvelocity + 100
+    val initialYvelocity = -10
+    val maxY = initialYvelocity + 100
 
     var xVelocity = initialXvelocity
-    for (f <- 0 until initialXvelocity + 1000) {
+    for (f <- 0 until maxX) {
 
       var yVelocity = initialYvelocity
 
-      for (u <- 0 until initialYvelocity + 1000) {
+      for (u <- 0 until maxY) {
 
-        val (hit, maxY) = fire(xVelocity, yVelocity)
+        val hit = fire(xVelocity, yVelocity)
 
         if (hit) {
-          maxHitY = Math.max(maxHitY, maxY)
+          foundVelocities.add(Loc(xVelocity, yVelocity))
         }
 
         yVelocity += 1
@@ -42,12 +45,10 @@ object Part1 {
 
       xVelocity += 1
     }
-    println(s"Max hit Y = $maxHitY")
+    println(s"hits : ${foundVelocities.size}: ${foundVelocities.mkString(", ")}")
   }
 
-  private def fire(initialXVelocity: Int, initialYVelocity: Int): (Boolean, Int) = {
-
-    var maxY = Integer.MIN_VALUE
+  private def fire(initialXVelocity: Int, initialYVelocity: Int): Boolean = {
 
     val trajectory = mutable.HashSet.empty[Loc]
 
@@ -57,7 +58,7 @@ object Part1 {
 
     var found = false
 
-    val failsafe = 1000
+    val failsafe = 100000
     var it = 0
     while (it < failsafe && (x < target.maxX + Margin && y > target.minY - Margin)) {
 
@@ -74,8 +75,6 @@ object Part1 {
 
       yVel -= 1
 
-      maxY = Math.max(maxY, y)
-
       if (inTheTarget(x, y)) {
         found = true
       }
@@ -83,9 +82,9 @@ object Part1 {
       trajectory.add(Loc(x, y))
     }
 
-    //if (found) printGrid(trajectory, initialXVelocity, initialYVelocity)
+    if (found) printGrid(trajectory, initialXVelocity, initialYVelocity)
 
-    (found, maxY)
+    found
 
   }
 
