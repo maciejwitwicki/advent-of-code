@@ -5,12 +5,13 @@ import mwi.advent.aoc2021.App2021
 object Advent_18 extends App2021 {
 
   val exampleString =
-    """|target area: x=20..30, y=-10..-5
+    """|[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]
+       |[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]
        |""".stripMargin
 
 
   val example = getInput(exampleString)
-  //val input = getInput(this.getClass)
+  val input = getInput(this.getClass)
 
   Part1.solve(example)
 
