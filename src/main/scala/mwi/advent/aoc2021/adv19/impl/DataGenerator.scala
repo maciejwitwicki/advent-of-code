@@ -3,43 +3,58 @@ package mwi.advent.aoc2021.adv19.impl
 import mwi.advent.aoc2021.adv19.Part1.Translation
 import mwi.advent.util.Loc3d
 
+import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Random
 
-case object DataGenerator {
+object DataGenerator {
+  private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val minCoord = -1000
   private val maxCoord = 1000
-  private final val orientations = List("x", "y", "z", "-x", "-y", "-z").combinations(3).toList
 
-  def generate() = {
+  def generate(): mutable.HashSet[Loc3d] = {
 
-    val translations = mutable.ArrayBuffer.empty[Translation]
+    val batches: Iterator[Future[mutable.HashSet[Loc3d]]] = (0 until maxCoord * 2)
+      .map(i => {
+        i - maxCoord
+      })
+      .grouped(100)
+      .map(b => create2(b))
 
-    var z = minCoord
-    while (z <= maxCoord) {
+    val f: Future[Iterator[mutable.HashSet[Loc3d]]] = Future.sequence(batches)
 
-      var y = minCoord
-      while (y <= maxCoord) {
+    Await
+      .result(f, Duration.Inf)
+      .foldLeft(mutable.HashSet.empty[Loc3d])((acc, el) => acc.addAll(el))
 
-        var x = minCoord
-        while (x < maxCoord) {
+  }
 
-         
-            translations.append(Translation(Loc3d(x, y, z), orientations))
-       
+  private def create2(batch: Seq[Int]): Future[mutable.HashSet[Loc3d]] = {
+    Future {
+      val thread = Thread.currentThread().getName
+      println(s"$thread -> generating batch ${batch.head} - ${batch.last}")
+      val result = mutable.HashSet.empty[Loc3d]
+      batch.foreach(z => {
+        var y = minCoord
+        while (y <= maxCoord) {
 
+          var x = minCoord
+          while (x < maxCoord) {
 
-          x += 1
+            result.add(Loc3d(x, y, z))
+
+            x += 1
+          }
+
+          y += 1
         }
+      })
 
-        y += 1
-      }
-
-      z += 1
+      result
     }
-
-    translations
-
   }
 
 }
