@@ -8,24 +8,25 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object BeaconFinder {
 
-  private val minCoord = -100
-  private val maxCoord = 100
+  private val minCoord = -1000
+  private val maxCoord = 1000
+  private final val orientations = List("x", "y", "z", "-x", "-y", "-z").combinations(3).toList
 
   private implicit val ec: ExecutionContext = ExecutionContext.global
 
-  def findFuture(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int): Future[Option[Translation]] = {
+  def findFuture(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int, translation: Translation): Future[Option[Translation]] = {
     Future {
-      find(commonBeacons, scans, i, j)
+      find(commonBeacons, scans, i, j, translation)
     }
   }
 
-  private def find(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int): Option[Translation] = {
+  private def find(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int): () = {
 
     val scan1 = scans(i)
     val scan2 = scans(j)
 
-    var found       = false
-    var translation = Translation(Loc3d(0, 0, 0), Orientation("null", "null"))
+    var found = false
+    var translation = Translation(Loc3d(0, 0, 0), List("null"))
 
     var z = minCoord
     while (!found && z <= maxCoord) {
@@ -58,24 +59,20 @@ object BeaconFinder {
     if (found) Some(translation) else None
   }
 
-  private def findForOrientations(base: Locs, translated: Set[Loc3d], requiredCommonBeaconsFound: Int): (Boolean, Orientation) = {
+  private def findForOrientations(base: Locs, translated: Set[Loc3d], requiredCommonBeaconsFound: Int): (Boolean, List[String]) = {
 
-    var success     = false
-    var index       = 0
-    var orientation = orientations(index)
-    val thread      = Thread.currentThread().getName
-    println(s"[$thread]looking for orientation $orientation")
+    var success = false
+
+    var or = List("")
+    var index = 0
     while (!success && index < orientations.size) {
-      val orientated = Translator.orientate(translated, orientation)
-
-      val found = findCommonBeacons(base, orientated, requiredCommonBeaconsFound)
-      if (found) {
-        success = true
-      }
-
+      or = orientations(index)
+      val orientated = Translator.orientate(translated, or)
+      success = findCommonBeacons(base, orientated, requiredCommonBeaconsFound)
+      index += 1
     }
 
-    (success, orientation)
+    (success, or)
 
   }
 

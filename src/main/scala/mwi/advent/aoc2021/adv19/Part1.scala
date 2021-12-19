@@ -1,8 +1,7 @@
 package mwi.advent.aoc2021.adv19
 
 import mwi.advent.aoc2021.adv19.Part1.translations
-import mwi.advent.aoc2021.adv19.impl.Parser
-import mwi.advent.aoc2021.adv19.impl.BeaconFinder
+import mwi.advent.aoc2021.adv19.impl.{BeaconFinder, Parser}
 import mwi.advent.util.{Loc, Loc3d, NumberExtractor}
 
 import java.math.BigInteger
@@ -12,22 +11,18 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 object Part1 extends NumberExtractor {
-
-  type Locs = mutable.ArrayBuffer[Loc3d]
-
-  private[adv19] case class Orientation(facing: String, up: String)
-
-  private[adv19] case class Translation(pos: Loc3d, orientation: Orientation)
-
   private implicit val ec: ExecutionContext = ExecutionContext.global
+  
+  type Locs = mutable.ArrayBuffer[Loc3d]
+  private[adv19] case class Orientation(facing: String, up: String)
+  private[adv19] case class Translation(pos: Loc3d, orientation: List[List[String]])
 
-  private final val commonBeacons                     = 12
+  private final val commonBeacons = 12
   private var scannerInput: mutable.ArrayBuffer[Locs] = mutable.ArrayBuffer.empty
 
   private var translations: mutable.HashMap[String, Translation] = mutable.HashMap.empty
 
-  case class Cluster(locs: Locs, triangles: List[Triangle])
-  case class Triangle(locs: List[Loc3d], distances: List[Double])
+  val cases = DataGenerator.generate()
 
   def solve(input: Array[String]): Unit = {
 
@@ -35,9 +30,21 @@ object Part1 extends NumberExtractor {
 
     val combinations = scannerInput.indices.sliding(2, 1)
 
+    combinations.map(c => {
+      val i = c(0)
+      val j = c(1)
+      
+      val operationFuture = Future.traverse(cases)(data => {
+        BeaconFinder.findFuture(commonBeacons, scannerInput, i, j, data)
+      })
+      
+      Await.ready(operationFuture, Duration.Inf)
+      
+    })
+    
     val operationFuture = Future.traverse(combinations)(c => {
-      val i      = c(0)
-      val j      = c(1)
+      val i = c(0)
+      val j = c(1)
       val thread = Thread.currentThread().getName
       println(s"$thread -> Searching common beacons between set $i and $j")
       BeaconFinder

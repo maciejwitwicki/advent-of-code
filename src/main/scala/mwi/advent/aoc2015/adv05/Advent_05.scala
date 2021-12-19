@@ -27,7 +27,7 @@ object Advent_05 extends App2015 {
 
   val part2example = getInput(part2exampleString)
 
-  Part2.solve(input)
+  Part2.solve(part2example)
 
 
 }

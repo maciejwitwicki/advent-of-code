@@ -8,40 +8,24 @@ object Translator {
     locs.map(l => Loc3d(x = l.x + by.x, y = l.y + by.y, z = l.z + by.z)).toSet
   }
 
-  def orientate(locs: Set[Loc3d], by: Orientation): Set[Loc3d] = {
+  def orientate(locs: Set[Loc3d], orientation: List[String]): Set[Loc3d] = {
+      locs.map(l => {
+        val newX = get(l, orientation(0))
+        val newY = get(l, orientation(1))
+        val newZ = get(l, orientation(2))
+        Loc3d(newX, newY, newZ)
+      })
+  }
 
-    val res = by match {
-      case Orientation("x", "y")  => locs
-      case Orientation("x", "-y") => locs.map(l => l.copy(y = l.y * -1))
-      case Orientation("x", "z")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("x", "-z") => locs.map(l => l.copy(y = l.z, z = l.y))
-
-      case Orientation("-x", "y")  => locs.map(l => l.copy(x = l.x * -1))
-      case Orientation("-x", "-y") => locs.map(l => l.copy(x = l.x * -1, y = l.y * -1, z = l.y * -1))
-      case Orientation("-x", "z")  => locs.map(l => l.copy(x = l.x * -1, y = l.z, z = l.y * -1))
-      case Orientation("-x", "-z") => locs.map(l => l.copy(x = l.x * -1, y = l.z, z = l.y))
-
-      case Orientation("y", "z")   => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("y", "-z")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("y", "x")   => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("y", "-x")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-y", "z")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-y", "-z") => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-y", "x")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-y", "-x") => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("z", "y")   => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("z", "-y")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("z", "x")   => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("z", "-x")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-z", "y")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-z", "-y") => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-z", "x")  => locs.map(l => l.copy(y = l.z, z = l.y * -1))
-      case Orientation("-z", "-x") => locs.toSet
-      case default                 => throw new IllegalArgumentException("not expected orientation")
+  private def get(l: Loc3d, orientation: String): Int = {
+    orientation match {
+      case "x" => l.x
+      case "-x" => l.x * -1
+      case "y" => l.y
+      case "-y" => l.y * -1
+      case "z" => l.z
+      case "-z" => l.z * -1
     }
-
-    res.toSet
-
   }
 
 }
