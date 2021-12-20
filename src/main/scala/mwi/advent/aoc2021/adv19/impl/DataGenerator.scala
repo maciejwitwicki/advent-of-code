@@ -3,17 +3,18 @@ package mwi.advent.aoc2021.adv19.impl
 import mwi.advent.aoc2021.adv19.Part1.Translation
 import mwi.advent.util.Loc3d
 
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.{ConcurrentHashMap, Executors}
 import scala.collection.mutable
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Random
 
 object DataGenerator {
-  private implicit val ec: ExecutionContext = ExecutionContext.global
 
-  private val minCoord = -1000
-  private val maxCoord = 1000
+  private implicit val ec: ExecutionContext = ExecutionPula.ec
+
+  private val minCoord = -100
+  private val maxCoord = 100
 
   def generate(): mutable.HashSet[Loc3d] = {
 

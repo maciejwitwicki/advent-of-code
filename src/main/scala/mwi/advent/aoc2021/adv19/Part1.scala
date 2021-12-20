@@ -1,7 +1,6 @@
 package mwi.advent.aoc2021.adv19
 
-import mwi.advent.aoc2021.adv19.Part1.translations
-import mwi.advent.aoc2021.adv19.impl.{BeaconFinder, DataGenerator, Parser}
+import mwi.advent.aoc2021.adv19.impl.{BeaconFinder, DataGenerator, ExecutionPula, Parser}
 import mwi.advent.util.{Loc, Loc3d, NumberExtractor}
 
 import java.math.BigInteger
@@ -11,48 +10,52 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 object Part1 extends NumberExtractor {
-  private implicit val ec: ExecutionContext = ExecutionContext.global
+  private implicit val ec: ExecutionContext = ExecutionPula.ec
 
   type Locs = mutable.ArrayBuffer[Loc3d]
+
   private[adv19] case class Orientation(facing: String, up: String)
+
   private[adv19] case class Translation(pos: Loc3d, orientation: List[List[String]])
+
   private[adv19] case class FoundOrientation(pos: Loc3d, orientation: List[String])
 
-  private final val commonBeacons                     = 12
+  private final val commonBeacons = 6
+
   private var scannerInput: mutable.ArrayBuffer[Locs] = mutable.ArrayBuffer.empty
 
-  private var translations: mutable.HashMap[String, FoundOrientation] = mutable.HashMap.empty
-
-  val cases: mutable.HashSet[Loc3d] = DataGenerator.generate()
-
   def solve(input: Array[String]): Unit = {
-
     scannerInput = Parser.parseScanerInput(input)
+    val scaners = ArrayBuffer.empty[Scaner]
 
-    val combinations = scannerInput.indices.sliding(2, 1)
+    for (i <- 0 until scannerInput.length) {
+      val scaner = scannerInput(i)
+      val distances = mutable.HashSet.empty[Distance]
 
-    combinations.map(c => {
-      val i      = c(0)
-      val j      = c(1)
-      val thread = Thread.currentThread().getName
-      println(s"$thread -> Searching common beacons between set $i and $j")
+      for (i <- scaner) {
+        for (j <- scaner) {
+          if (i != j) {
+            distances.add(Distance(calcDistance(i, j), Set(i, j)))
+          }
+        }
+      }
+      scaners.append(Scaner(i, distances))
+    }
 
-      val operationFuture = Future.traverse(cases)(data => {
-        BeaconFinder
-          .findFuture(commonBeacons, scannerInput, i, j, data)
-          .map(result => {
-            result.foreach(t => {
-              val thread = Thread.currentThread().getName
-              println(s"$thread -> found translation from $i to $j: $t")
-              translations.put(s"$i->$j", t)
-            })
-          })
-      })
+    println(s"scanners $scaners")
 
-      Await.ready(operationFuture, Duration.Inf)
-
-    })
 
   }
 
+  private def calcDistance(p1: Loc3d, p2: Loc3d): Double = {
+    Math.sqrt(
+      Math.pow(p1.x + p2.x, 2) +
+        Math.pow(p1.y + p2.y, 2) +
+        Math.pow(p1.z + p2.z, 2)
+    )
+  }
+
+  private case class Scaner(id: Int, distances: mutable.HashSet[Distance])
+
+  private case class Distance(value: Double, points: Set[Loc3d])
 }

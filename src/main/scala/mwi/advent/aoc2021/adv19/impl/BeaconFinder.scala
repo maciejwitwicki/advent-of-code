@@ -4,15 +4,16 @@ import mwi.advent.aoc2021.adv19.Part1.{FoundOrientation, Locs, Orientation, Tran
 import mwi.advent.util.{Loc, Loc3d}
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.{ExecutionContext, Future}
 
 object BeaconFinder {
 
-  private val minCoord           = -1000
-  private val maxCoord           = 1000
-  private final val orientations = List("x", "y", "z", "-x", "-y", "-z").combinations(3).toList
+  private val minCoord = -1000
+  private val maxCoord = 1000
+  private final val orientations: ArrayBuffer[List[String]] = buildOrientations
 
-  private implicit val ec: ExecutionContext = ExecutionContext.global
+  private implicit val ec: ExecutionContext = ExecutionPula.ec
 
   def findFuture(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int, translation: Loc3d): Future[Option[FoundOrientation]] = {
     Future {
@@ -28,9 +29,9 @@ object BeaconFinder {
     var found = false
 
     val thread = Thread.currentThread().getName
-    println(s"$thread -> searching $i -> $j translated to ${translation}")
+    if (translation.x == 0 && translation.y == 0) println(s"$thread -> searching $i -> $j translated to ${translation}")
 
-    val translatedSet          = Translator.translate(scan2, translation)
+    val translatedSet = Translator.translate(scan2, translation)
     val (success, orientation) = findForOrientations(scan1, translatedSet, commonBeacons)
 
     if (success) {
@@ -42,9 +43,10 @@ object BeaconFinder {
 
     var success = false
 
-    var or    = List("")
+    var or = List("")
     var index = 0
-    while (!success && index < orientations.size) {
+    while (!success && index < orientations.length) {
+      val z = orientations
       or = orientations(index)
       val orientated = Translator.orientate(translated, or)
       success = findCommonBeacons(base, orientated, requiredCommonBeaconsFound)
@@ -69,6 +71,30 @@ object BeaconFinder {
     }
 
     found == requiredCommonBeaconsFound
+  }
+
+  private def buildOrientations = {
+
+    val chars = ArrayBuffer("x", "y", "z", "-x", "-y", "-z")
+
+    val combinations = ArrayBuffer.empty[List[String]]
+
+    for (ch1 <- chars) {
+
+      for (ch2 <- chars) {
+
+        for (ch3 <- chars) {
+
+          val list = List(ch1, ch2, ch3)
+
+          if (list.map(x => x.replace("-", "")).distinct.size == 3) {
+            combinations.append(list)
+          }
+        }
+      }
+    }
+
+    combinations
   }
 
 }
