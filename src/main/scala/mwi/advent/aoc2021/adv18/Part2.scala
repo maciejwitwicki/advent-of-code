@@ -1,37 +1,58 @@
 package mwi.advent.aoc2021.adv18
 
-import mwi.advent.aoc2021.adv18.impl.Exploder
-import mwi.advent.aoc2021.adv18.impl.Parser
+import mwi.advent.aoc2021.adv18.impl.{Exploder, Parser}
 import mwi.advent.util.{Loc, NumberExtractor}
 
 import java.math.BigInteger
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object Part1 extends NumberExtractor {
+object Part2 extends NumberExtractor {
 
   def solve(input: Array[String]): Unit = {
 
-    val res = input.foldLeft("")((acc, line) => {
-      if (acc.isBlank) {
-        line
-      } else {
-        val sum = add(acc, line)
-        val res = parseLine(sum)
-        // println(s"\n    $acc\n  + $line\n  = $res")
-        res
+    var pairs: Set[(String, String)] = Set.empty
+
+    for (i <- input) {
+      for (j <- input) {
+        if (i != j) {
+          pairs = pairs + ((i, j))
+        }
       }
-    })
+    }
 
-    val node: Node = Parser.parseSnailfishStringToObject(res)
+    pairs.foreach(println)
 
-    println(s"res: $node")
+    val result = pairs
+      .map(p => {
+        val sum     = add(p._1, p._2)
+        val reduced = reduceSnailfishNumber(sum)
+        Parser.parseSnailfishStringToObject(reduced).getMagnitude
+      })
+      .max
 
-    println(s"magnitude: ${node.getMagnitude}")
+    println(s"max magnitude: $result")
+
+//    val res = input.foldLeft("")((acc, line) => {
+//      if (acc.isBlank) {
+//        line
+//      } else {
+//        val sum = add(acc, line)
+//        val res = reduceSnailfishNumber(sum)
+//        // println(s"\n    $acc\n  + $line\n  = $res")
+//        res
+//      }
+//    })
+
+    // val node: Node = Parser.parseContent(res)
+
+    // println(s"res: $node")
+
+    // println(s"magnitude: ${node.getMagnitude}")
 
   }
 
-  private def parseLine(line: String) = {
+  private def reduceSnailfishNumber(line: String) = {
 
     val operations = mutable.Stack('e')
     var tmp        = line

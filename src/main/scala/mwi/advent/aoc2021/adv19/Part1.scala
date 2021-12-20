@@ -12,7 +12,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 object Part1 extends NumberExtractor {
   private implicit val ec: ExecutionContext = ExecutionPula.ec
 
-  type Locs = mutable.HashSet[Loc3d]
+  private[adv19] type Locs = mutable.HashSet[Loc3d]
 
   private[adv19] case class Translation(pos: Loc3d, orientation: List[List[String]])
 
