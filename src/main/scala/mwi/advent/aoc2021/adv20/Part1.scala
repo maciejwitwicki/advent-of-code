@@ -1,8 +1,7 @@
 package mwi.advent.aoc2021.adv20
 
-import mwi.advent.aoc2021.adv19.Part1.translations
-import mwi.advent.aoc2021.adv19.impl.{BeaconFinder, DataGenerator, Parser}
-import mwi.advent.util.{Loc, Loc3d, NumberExtractor}
+import mwi.advent.aoc2021.adv19.impl.Parser
+import mwi.advent.util.{Loc, NumberExtractor}
 
 import java.math.BigInteger
 import scala.collection.mutable
@@ -35,7 +34,7 @@ object Part1 extends NumberExtractor {
     println(s"res: $count")
   }
 
-  private def enchanceGrid(step: Int) = {
+  private def enchanceGrid(step: Int): Unit = {
 
     val newGrid = mutable.HashMap.empty[Loc, Char]
 
@@ -105,7 +104,7 @@ object Part1 extends NumberExtractor {
     result
   }
 
-  private def parseInput(input: Array[String]) = {
+  private def parseInput(input: Array[String]): Unit = {
     bitmap = input(0)
 
     val img = input.drop(2)
@@ -130,7 +129,7 @@ object Part1 extends NumberExtractor {
     }
   }
 
-  private def printGrid() = {
+  private def printGrid(): Unit = {
 
     println("== grid ==")
     val rangeY = buildRange(minY - 5, maxY + 5)

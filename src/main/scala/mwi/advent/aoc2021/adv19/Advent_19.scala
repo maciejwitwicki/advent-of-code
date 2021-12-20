@@ -146,6 +146,6 @@ object Advent_19 extends App2021 {
   val example = getInput(exampleString)
   val input   = getInput(this.getClass)
 
-  Part1.solve(example)
+  Part1.solve(input)
 
 }
