@@ -9,8 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object BeaconFinder {
 
-  private val minCoord = -1000
-  private val maxCoord = 1000
+  private val minCoord                                      = -1000
+  private val maxCoord                                      = 1000
   private final val orientations: ArrayBuffer[List[String]] = buildOrientations
 
   private implicit val ec: ExecutionContext = ExecutionPula.ec
@@ -19,6 +19,10 @@ object BeaconFinder {
     Future {
       find(commonBeacons, scans, i, j, translation)
     }
+  }
+
+  def getOrientations: List[List[String]] = {
+    orientations.toList
   }
 
   private def find(commonBeacons: Int, scans: mutable.ArrayBuffer[Locs], i: Int, j: Int, translation: Loc3d): Option[FoundOrientation] = {
@@ -31,7 +35,7 @@ object BeaconFinder {
     val thread = Thread.currentThread().getName
     if (translation.x == 0 && translation.y == 0) println(s"$thread -> searching $i -> $j translated to ${translation}")
 
-    val translatedSet = Translator.translate(scan2, translation)
+    val translatedSet          = Translator.translate(scan2, translation)
     val (success, orientation) = findForOrientations(scan1, translatedSet, commonBeacons)
 
     if (success) {
@@ -43,7 +47,7 @@ object BeaconFinder {
 
     var success = false
 
-    var or = List("")
+    var or    = List("")
     var index = 0
     while (!success && index < orientations.length) {
       val z = orientations

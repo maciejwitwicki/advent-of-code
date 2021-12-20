@@ -143,11 +143,9 @@ object Advent_19 extends App2021 {
       |30,-46,-14
       |""".stripMargin
 
-
   val example = getInput(exampleString)
-  val input = getInput(this.getClass)
+  val input   = getInput(this.getClass)
 
   Part1.solve(example)
-
 
 }
