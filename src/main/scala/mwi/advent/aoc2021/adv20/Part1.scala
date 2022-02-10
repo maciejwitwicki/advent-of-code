@@ -1,7 +1,7 @@
 package mwi.advent.aoc2021.adv20
 
 import mwi.advent.aoc2021.adv19.impl.Parser
-import mwi.advent.util.{Loc, NumberExtractor}
+import mwi.advent.util.{Loc, AdventHelpers}
 
 import java.math.BigInteger
 import scala.collection.mutable
@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-object Part1 extends NumberExtractor {
+object Part1 extends AdventHelpers {
   private implicit val ec: ExecutionContext = ExecutionContext.global
 
   private var bitmap = ""
@@ -92,16 +92,6 @@ object Part1 extends NumberExtractor {
     }
 
     word
-  }
-
-  private def buildRange(min: Int, max: Int): ArrayBuffer[Int] = {
-    var i      = min
-    var result = ArrayBuffer.empty[Int]
-    while (i < max) {
-      result.append(i)
-      i += 1
-    }
-    result
   }
 
   private def parseInput(input: Array[String]): Unit = {

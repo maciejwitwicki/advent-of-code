@@ -1,13 +1,13 @@
 package mwi.advent.aoc2021.adv18
 
 import mwi.advent.aoc2021.adv18.impl.{Exploder, Parser}
-import mwi.advent.util.{Loc, NumberExtractor}
+import mwi.advent.util.{Loc, AdventHelpers}
 
 import java.math.BigInteger
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object Part2 extends NumberExtractor {
+object Part2 extends AdventHelpers {
 
   def solve(input: Array[String]): Unit = {
 

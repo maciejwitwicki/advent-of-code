@@ -1,7 +1,7 @@
 package mwi.advent.aoc2021.adv19
 
 import mwi.advent.aoc2021.adv19.impl.{ExecutionPula, Parser}
-import mwi.advent.util.{Loc, Loc3d, NumberExtractor}
+import mwi.advent.util.{Loc, Loc3d, AdventHelpers}
 
 import java.math.BigInteger
 import scala.collection.mutable
@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-object Part1 extends NumberExtractor {
+object Part1 extends AdventHelpers {
   private implicit val ec: ExecutionContext = ExecutionPula.ec
 
   private[adv19] type Locs = mutable.HashSet[Loc3d]
